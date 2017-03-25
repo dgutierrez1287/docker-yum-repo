@@ -3,23 +3,19 @@ MAINTAINER Diego Gutierrez <dgutierrez1287@gmail.com>
 
 RUN yum -y install epel-release && yum clean all
 RUN yum -y update && yum clean all
-RUN yum -y install ruby gcc ruby-devel supervisor createrepo yum-utils nginx && yum clean all
+RUN yum -y install ruby gcc ruby-devel createrepo yum-utils && yum clean all
 RUN gem install rb-inotify
 
-RUN mkdir /repo
-RUN mkdir /logs
+RUN mkdir /root/repo
+RUN mkdir /root/logs
 
-ADD nginx.conf /etc/nginx/nginx.conf
-ADD supervisord.conf /etc/supervisord.conf
-ADD scan_repo.rb /
-ADD startup.sh /
+COPY scan_repo.rb /root/scan_repo.rb
 
-RUN chmod 755 /scan_repo.rb
-RUN chmod 755 /startup.sh
+RUN chmod 755 /root/scan_repo.rb
 
-EXPOSE 80
 VOLUME /repo /logs
 
+COPY entrypoint.sh /root/entrypoint.sh
 RUN chmod 755 entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
 
