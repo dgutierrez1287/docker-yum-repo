@@ -13,7 +13,7 @@ COPY scan_repo.rb /root/scan_repo.rb
 
 RUN chmod 755 /root/scan_repo.rb
 
-VOLUME /repo /logs
+VOLUME /root/repo /root/logs
 
 COPY entrypoint.sh /root/entrypoint.sh
 RUN chmod 755 entrypoint.sh
