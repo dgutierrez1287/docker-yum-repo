@@ -1,10 +1,10 @@
 require 'rb-inotify'
 require 'logger'
 
-$logger = Logger.new('/logs/repo-scanner/scanner.log', 'daily')
+$logger = Logger.new('/root/logs/repo-scanner/scanner.log', 'daily')
 $logger.level = Logger::INFO
 
-$top_dir = "/repo"
+$top_dir = "/root/repo"
 
 ##
 # scan_and_update
