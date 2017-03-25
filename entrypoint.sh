@@ -1,9 +1,5 @@
 #!/bin/bash
 
-mkdir /logs/repo-scanner
-mkdir /logs/nginx
-mkdir /logs/supervisord
+mkdir /root/logs/repo-scanner
 
-chown nginx:nginx /logs/nginx
-
-exec /usr/bin/supervisord -n -c /etc/supervisord.conf
+ruby /root/scan_repo.rb
