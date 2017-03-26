@@ -1,9 +1,9 @@
 #!/bin/bash
 
-mkdir /logs/repo-scanner
-mkdir /logs/nginx
-mkdir /logs/supervisord
+mkdir /root/logs/repo-scanner
+mkdir /root/logs/nginx
+mkdir /root/logs/supervisord
 
-chown nginx:nginx /logs/nginx
+chown nginx:nginx /root/logs/nginx
 
 exec /usr/bin/supervisord -n -c /etc/supervisord.conf

@@ -6,21 +6,20 @@ RUN yum -y update && yum clean all
 RUN yum -y install ruby gcc ruby-devel supervisor createrepo yum-utils nginx && yum clean all
 RUN gem install rb-inotify
 
-RUN mkdir /repo
-RUN mkdir /logs
+RUN mkdir /root/repo
+RUN mkdir /root/logs
 
-ADD nginx.conf /etc/nginx/nginx.conf
-ADD supervisord.conf /etc/supervisord.conf
-ADD scan_repo.rb /
-ADD startup.sh /
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY supervisord.conf /etc/supervisord.conf
+COPY scan_repo.rb /root/scan_repo.rb
 
-RUN chmod 755 /scan_repo.rb
-RUN chmod 755 /startup.sh
+RUN chmod 700 /root/scan_repo.rb
 
 EXPOSE 80
 VOLUME /repo /logs
 
-RUN chmod 755 entrypoint.sh
+COPY entrypoint.sh /root/entrypoint.sh
+RUN chmod 700 entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
 
 
