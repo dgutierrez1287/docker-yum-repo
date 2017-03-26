@@ -1,0 +1,2 @@
+Version: 1.0.0
+This initial release happened months ago however since I am going to be making some heavy changes I figured I would tag it to maintain the point in time.
