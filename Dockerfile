@@ -16,7 +16,7 @@ COPY scan_repo.rb /root/scan_repo.rb
 RUN chmod 700 /root/scan_repo.rb
 
 EXPOSE 80
-VOLUME /repo /logs
+VOLUME /root/repo /root/logs
 
 COPY entrypoint.sh /root/entrypoint.sh
 RUN chmod 700 entrypoint.sh
