@@ -1,9 +1,0 @@
-{
-  "dependencyCommands": [
-    "yum -y install wget"
-  ],
-  "testCases": [
-    "triggerRepoScan",
-    "repoUpdateCheck"
-  ]
-}
