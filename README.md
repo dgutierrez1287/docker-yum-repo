@@ -69,4 +69,4 @@ This initial release happened months ago however since I am going to be making s
 
 Version: 2.0.0, 2018-03-18
 
-This is almost a full re-write with many new features. The ruby script has been replaced by a go program, which will do an inital scan at start up and uses concurrency and file locking. I have added multi-stage build process for the container to bring down the final container size. I have also added controls for not enabling nginx (if file serving will be done another way and to save resouces) amd turning on debugging.
+This is almost a full re-write with many new features. The ruby script has been replaced by a go program, which will do an inital scan at start up and uses concurrency and file locking. I have added multi-stage build process for the container to bring down the final container size. I have also added controls for not enabling nginx (if file serving will be done another way and to save resources) and turning on debugging.
