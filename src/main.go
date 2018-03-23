@@ -66,18 +66,18 @@ func checkErrorAndLog(e error) {
 	}
 }
 
-// updateRepo(path *string)
+// updateRepo(path string)
 // This will run the update for the repo
 // This will take in a pointer to the path
 // This will return nothing
-func updateRepo(path *string) {
+func updateRepo(path string) {
 
-	lockfile := *path + "/" + LockFileName
+	lockfile := path + "/" + LockFileName
 	log.Debugf("Trying to create lockfile %s", lockfile)
 	golock.Lock(lockfile)
 
 	cmd := "createrepo"
-	cmdArgs := []string{"--update", *path}
+	cmdArgs := []string{"--update", path}
 
 	log.Debugf("Running command: %s %s", cmd, strings.Join(cmdArgs, " "))
 
@@ -85,13 +85,13 @@ func updateRepo(path *string) {
 		if exitErr, ok := err.(*exec.ExitError); ok {
 			status := exitErr.Sys().(syscall.WaitStatus)
 			if status != 0 {
-				log.Errorf("Could not update repo %s", *path)
+				log.Errorf("Could not update repo %s", path)
 			}
 		} else {
 			checkErrorAndLog(err)
 		}
 	} else {
-		log.Debugf("Successfully updated repo %s", *path)
+		log.Debugf("Successfully updated repo %s", path)
 	}
 
 	log.Debug("Unlocking directory")
@@ -116,7 +116,7 @@ func (paths *rpmPaths) findRpms(path string, info os.FileInfo, err error) error 
 		// Get a list of files in the directory and loop
 		files, _ := ioutil.ReadDir(path)
 		for _, file := range files {
-			log.Debugf("Checking file %s", file.Name)
+			log.Debugf("Checking file %s", file.Name())
 
 			// If the file is an RPM add the directory to the list and break the loop
 			if rpmRegex.MatchString(file.Name()) {
@@ -145,28 +145,9 @@ func initialScanAndUpdate() {
 
 	log.Infof("%d directories found that contain RPMs, running update", len(paths))
 
-	// Create a channel that is buffered by the number of paths found
-	ch := make(chan string, len(paths))
-	paths.toChannel(ch)
-	close(ch)
-
-	for rpmPath := range ch {
-		log.Debugf("Creating go routine to update %s", rpmPath)
-		go updateRepo(&rpmPath)
-	}
-}
-
-// (paths *rpmPaths) toChannel(ch chan string)
-// This will convert a list of all the paths that contain RPMs into a channel for processing
-// This will take in a channel and rpmPaths as a receiver
-// This will return nothing
-func (paths *rpmPaths) toChannel(ch chan string) {
-
-	log.Debug("Converting RPM directory paths to channel for processing")
-
-	for _, path := range *paths {
-		log.Debugf("Adding path %s to channel", path)
-		ch <- path
+	for _, path := range paths {
+		log.Debugf("Update %s", path)
+		updateRepo(path)
 	}
 }
 
@@ -209,7 +190,7 @@ func main() {
 			// Get the directory and start update
 			rpmDir := filepath.Dir(event.Path())
 			log.Infof("RPM change detected in %s", rpmDir)
-			go updateRepo(&rpmDir)
+			updateRepo(rpmDir)
 		}
 	}
 }
