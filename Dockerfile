@@ -1,5 +1,5 @@
 # build stage
-FROM golang:1.8.3 as builder
+FROM golang:1.14.1 as builder
 
 WORKDIR /go/src/github.com/dgutierrez1287/docker-yum-repo
 
@@ -19,11 +19,8 @@ LABEL maintainer="Diego Gutierrez <dgutierrez1287@gmail.com>"
 RUN yum -y install epel-release && \
     yum -y update && \
     yum -y install supervisor createrepo yum-utils nginx && \
-    yum clean all
-
-RUN mkdir /repo && \
-    chmod 777 /repo && \
-    mkdir -p /logs
+    yum clean all && \
+    mkdir -p /repo /logs
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY supervisord.conf /etc/supervisord.conf
