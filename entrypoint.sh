@@ -6,7 +6,7 @@ mkdir /logs/supervisord
 
 chown nginx:nginx /logs/nginx
 
-chmod -R 0755 /repo
+chmod -R 0777 /repo
 
 if [[ "${SERVE_FILES}" == "true" ]]; then
     echo "Serving Files is on"
