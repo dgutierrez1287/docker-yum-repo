@@ -1,5 +1,8 @@
 # build stage
-FROM golang:1.8.3 as builder
+ARG REGISTRY_PREFIX
+ARG GOLANG_VERSION=latest
+ARG CENTOS_VERSION=7
+FROM ${REGISTRY_PREFIX}golang:${GOLANG_VERSION} as builder
 
 WORKDIR /go/src/github.com/dgutierrez1287/docker-yum-repo
 
@@ -13,7 +16,8 @@ COPY src/*.go .
 RUN GOOS=linux go build -x -o repoScanner .
 
 # application image
-FROM centos:7
+ARG REGISTRY_PREFIX
+FROM ${REGISTRY_PREFIX}centos:${CENTOS_VERSION}
 LABEL maintainer="Diego Gutierrez <dgutierrez1287@gmail.com>"
 
 RUN yum -y install epel-release && \
