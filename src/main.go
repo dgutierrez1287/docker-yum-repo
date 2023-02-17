@@ -9,8 +9,8 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/rjeczalik/notify"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/dickeyxxx/golock.v1"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
@@ -73,25 +73,25 @@ func checkErrorAndLog(e error) {
 func updateRepo(path *string) {
 
 	lockfile := *path + "/" + LockFileName
-	log.Debugf("Trying to create lockfile %s", lockfile)
+	log.Debugf("Trying to create lockfile '%s'", lockfile)
 	golock.Lock(lockfile)
 
 	cmd := "createrepo"
 	cmdArgs := []string{"--update", *path}
 
-	log.Debugf("Running command: %s %s", cmd, strings.Join(cmdArgs, " "))
+	log.Debugf("Running command: '%s' '%s'", cmd, strings.Join(cmdArgs, " "))
 
 	if err := exec.Command(cmd, cmdArgs...).Run(); err != nil {
 		if exitErr, ok := err.(*exec.ExitError); ok {
 			status := exitErr.Sys().(syscall.WaitStatus)
 			if status != 0 {
-				log.Errorf("Could not update repo %s", *path)
+				log.Errorf("Could not update repo '%s', status '%d'", *path, status)
 			}
 		} else {
 			checkErrorAndLog(err)
 		}
 	} else {
-		log.Debugf("Successfully updated repo %s", *path)
+		log.Debugf("Successfully updated repo '%s'", *path)
 	}
 
 	log.Debug("Unlocking directory")
@@ -111,16 +111,16 @@ func (paths *rpmPaths) findRpms(path string, info os.FileInfo, err error) error 
 	// If the location is a directory check for RPMs
 	if info.IsDir() {
 
-		log.Debugf("Checking directory %s", path)
+		log.Debugf("Checking directory '%s'", path)
 
 		// Get a list of files in the directory and loop
 		files, _ := ioutil.ReadDir(path)
 		for _, file := range files {
-			log.Debugf("Checking file %s", file.Name)
+			log.Debugf("Checking file '%s'", file.Name())
 
 			// If the file is an RPM add the directory to the list and break the loop
 			if rpmRegex.MatchString(file.Name()) {
-				log.Debugf("Adding %s to rpm directories", path)
+				log.Debugf("Adding '%s' to rpm directories", file.Name())
 				*paths = append(*paths, path)
 				break
 			}
@@ -143,7 +143,7 @@ func initialScanAndUpdate() {
 	err := filepath.Walk(RepoDir, paths.findRpms)
 	checkErrorAndLog(err)
 
-	log.Infof("%d directories found that contain RPMs, running update", len(paths))
+	log.Infof("'%d' directories found that contain RPMs, running update", len(paths))
 
 	// Create a channel that is buffered by the number of paths found
 	ch := make(chan string, len(paths))
@@ -151,7 +151,7 @@ func initialScanAndUpdate() {
 	close(ch)
 
 	for rpmPath := range ch {
-		log.Debugf("Creating go routine to update %s", rpmPath)
+		log.Debugf("Creating go routine to update '%s'", rpmPath)
 		go updateRepo(&rpmPath)
 	}
 }
@@ -201,14 +201,14 @@ func main() {
 		// Block until there is an event
 		event := <-ch
 
-		log.Debugf("Event %s on %s", event.Event().String(), event.Path())
+		log.Debugf("Event '%s' on '%s'", event.Event().String(), event.Path())
 
 		// if the event was an RPM file
 		if rpmRegex.MatchString(event.Path()) {
 
 			// Get the directory and start update
 			rpmDir := filepath.Dir(event.Path())
-			log.Infof("RPM change detected in %s", rpmDir)
+			log.Infof("RPM change detected in '%s'", rpmDir)
 			go updateRepo(&rpmDir)
 		}
 	}
